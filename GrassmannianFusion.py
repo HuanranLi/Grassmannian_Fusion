@@ -40,10 +40,10 @@ class GrassmannianFusion:
         print('Successfully save to: ' + path )
         return True
 
-    def load_model(cls, path):
+    def load_model(path):
         #rebuild the object
         data = np.load(path)
-        GF = cls(X = data[' X '],
+        GF = GrassmannianFusion(X = data[' X '],
                 Omega = data[' Omega '],
                 r = data[' r '],
                 lamb = data[' lamb '],
