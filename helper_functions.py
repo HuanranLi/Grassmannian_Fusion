@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
+from itertools import permutations
+
 def dUU(U_1, U_2, r):
   u,s,vt = np.linalg.svd(U_1.T @ U_2)
 
