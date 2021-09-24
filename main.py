@@ -52,7 +52,7 @@ def main():
 
     #ax = sns.heatmap(d_matrix)
     sc = SpectralClustering(n_clusters=K,affinity = 'nearest_neighbors',random_state=0).fit(d_matrix)
-    print('SC Accuracy:' , 1 - evaluate(sc.labels_, truth , K))
+    print('SC Accuracy:' , 1 - evaluate(sc.labels_, labels , K))
 
 
 
