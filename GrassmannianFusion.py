@@ -2,12 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 from helper_functions import dUU
+import os
 
 class GrassmannianFusion:
     X: np.ndarray
     Omega: np.ndarray
     r: int
-    lamb: int
+    lamb: float
     weight_factor: float
     step_size: float
     g_threshold: float
@@ -22,6 +23,40 @@ class GrassmannianFusion:
 
     U_array: np.ndarray
     X0:list
+    
+    def save_model(self, path):
+        np.savez_compressed(path, X = X,
+                                Omega = Omega,
+                                r = r,
+                                lamb = lamb,
+                                weight_factor = weight_factor,
+                                g_threshold = g_threshold,
+                                bound_zero = bound_zero,
+                                singular_value_bound = singular_value_bound,
+                                g_column_norm_bound = g_column_norm_bound,
+                                U_manifold_bound = U_manifold_bound,
+                                U_array = U_array)
+                                
+        print('Successfully save to: ' + path )
+        return True
+
+    def load_model(cls, path):
+        #rebuild the object
+        data = np.load(path)
+        GF = cls(X = data[' X '],
+                Omega = data[' Omega '],
+                r = data[' r '],
+                lamb = data[' lamb '],
+                weight_factor = data[' weight_factor '],
+                g_threshold = data[' g_threshold '],
+                bound_zero = data[' bound_zero '],
+                singular_value_bound = data[' singular_value_bound '],
+                g_column_norm_bound = data[' g_column_norm_bound '],
+                U_manifold_bound = data[' U_manifold_bound '],
+                U_array = data[' U_array '])
+        
+        print('Successfully loaded the model!')
+        return GF
 
 
     #U_array load version
@@ -33,7 +68,8 @@ class GrassmannianFusion:
                 g_column_norm_bound = 1e-5,
                 U_manifold_bound = 1e-2,
                 **optional_params):
-
+           
+        print('\n########### GrassmannianFusion Initialization Start ###########\n')
         self.X = X
         self.Omega = Omega
         self.r = r
@@ -49,13 +85,17 @@ class GrassmannianFusion:
         self.n = X.shape[1]
 
         self.shape = [self.m, self.n, self.r]
-
+        
         if 'U_array' in optional_params:
             self.load_U_array(optional_params['U_array'])
+            print('U_array Loaded successfully!')
         else:
             self.initialize_U_array()
+            print('U_array initialized successfully!')
 
         self.construct_X0()
+        
+        print('\n########### GrassmannianFusion Initialization END ###########\n')
 
     def get_U_array(self):
         return self.U_array.copy()
@@ -63,7 +103,9 @@ class GrassmannianFusion:
 
     def load_U_array(self, U_array):
         self.U_array = U_array.copy()
-
+        
+    def change_lambda(lamb: float):
+        self.lamb = lamb
 
     def initialize_U_array(self):
         U_array = np.array([np.random.randn(self.m, self.r) for i in range(self.n)])
@@ -104,7 +146,8 @@ class GrassmannianFusion:
         obj_record = []
         gradient_record = []
         start_time = time.time()
-
+        
+        print('\n################ Training Process Begin ################\n')
         #main algo
         for iter in range(max_iter):
 
@@ -132,11 +175,14 @@ class GrassmannianFusion:
                 print('Obj value:', obj)
                 print('gradient:', gradient_norm)
                 print('Time Cost(min): ', (time.time() - start_time)/60 )
+                print()
 
             if end:
-                print('iter', iter)
-                print('Obj value:', obj)
+                print('Final iter', iter)
+                print('Final Obj value:', obj)
                 break
+                
+        print('\n################ Training Process END ################\n')
 
 
     def cal_obj(self, U_array):

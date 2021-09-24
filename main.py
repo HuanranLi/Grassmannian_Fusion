@@ -1,13 +1,13 @@
 from GrassmannianFusion import GrassmannianFusion
 from Initialization import *
 from helper_functions import evaluate
+
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.cluster import SpectralClustering
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
-from itertools import permutations
 from sklearn.cluster import DBSCAN
-import time
+
 import seaborn as sns
 
 def main():
@@ -52,6 +52,11 @@ def main():
     sc = SpectralClustering(n_clusters=K,affinity = 'nearest_neighbors',random_state=0).fit(d_matrix)
     print('SC Accuracy:' , 1 - evaluate(sc.labels_, labels , K))
 
+    
+    GF.train(max_iter = 50, step_size = 1)
+    d_matrix = GF.distance_matrix()
+    sc = SpectralClustering(n_clusters=K,affinity = 'nearest_neighbors',random_state=0).fit(d_matrix)
+    print('SC Accuracy:' , 1 - evaluate(sc.labels_, labels , K))
 
 
     '''
