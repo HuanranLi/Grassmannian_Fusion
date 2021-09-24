@@ -69,7 +69,7 @@ class GrassmannianFusion:
                 U_manifold_bound = 1e-2,
                 **optional_params):
            
-        print('\n########### GrassmannianFusion Initialization Start ###########\n')
+        print('\n########### GrassmannianFusion Initialization Start ###########')
         self.X = X
         self.Omega = Omega
         self.r = r
@@ -95,7 +95,7 @@ class GrassmannianFusion:
 
         self.construct_X0()
         
-        print('\n########### GrassmannianFusion Initialization END ###########\n')
+        print('########### GrassmannianFusion Initialization END ###########\n')
 
     def get_U_array(self):
         return self.U_array.copy()
@@ -147,7 +147,7 @@ class GrassmannianFusion:
         gradient_record = []
         start_time = time.time()
         
-        print('\n################ Training Process Begin ################\n')
+        print('\n################ Training Process Begin ################')
         #main algo
         for iter in range(max_iter):
 
@@ -182,7 +182,7 @@ class GrassmannianFusion:
                 print('Final Obj value:', obj)
                 break
                 
-        print('\n################ Training Process END ################\n')
+        print('################ Training Process END ################\n')
 
 
     def cal_obj(self, U_array):
