@@ -43,17 +43,17 @@ class GrassmannianFusion:
     def load_model(path):
         #rebuild the object
         data = np.load(path)
-        GF = GrassmannianFusion(X = data[' X '],
-                Omega = data[' Omega '],
-                r = data[' r '],
-                lamb = data[' lamb '],
-                weight_factor = data[' weight_factor '],
-                g_threshold = data[' g_threshold '],
-                bound_zero = data[' bound_zero '],
-                singular_value_bound = data[' singular_value_bound '],
-                g_column_norm_bound = data[' g_column_norm_bound '],
-                U_manifold_bound = data[' U_manifold_bound '],
-                U_array = data[' U_array '])
+        GF = GrassmannianFusion(X = data['X'],
+                Omega = data['Omega'],
+                r = data['r'],
+                lamb = data['lamb'],
+                weight_factor = data['weight_factor'],
+                g_threshold = data['g_threshold'],
+                bound_zero = data['bound_zero'],
+                singular_value_bound = data['singular_value_bound'],
+                g_column_norm_bound = data['g_column_norm_bound'],
+                U_manifold_bound = data['U_manifold_bound'],
+                U_array = data['U_array'])
         
         print('Successfully loaded the model!')
         return GF
