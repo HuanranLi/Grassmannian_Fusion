@@ -41,3 +41,32 @@ def create_n_subspace_clusters(n_clusters = 2, shape = (100,100,5)):
 
 
     return Xm,masks,X_lowRank_array,labels
+
+
+def initialize_X_with_missing(init_params):
+    (m,n,r,K,missing_rate) = init_params
+    
+    shape = (m,n,r)
+    X, masks, X_lowRank_array,labels = create_n_subspace_clusters(n_clusters=K, shape = shape)
+
+    #observed index
+    Omega = np.random.choice(m*n, size = int(m*n * (1-missing_rate) ), replace= False )
+
+    #create observed matrix
+    X_omega = np.zeros((m,n))
+    for p in Omega:
+        X_omega[p // n, p % n] = X[p // n, p % n]
+        
+    info = {'X':X, 'masks': masks, 'X_lowRank_array': X_lowRank_array,  }
+    return X_omega, labels, Omega, info
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

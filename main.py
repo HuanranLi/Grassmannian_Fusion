@@ -16,24 +16,17 @@ def main():
     r = 3 #3-5
     K = 3
     missing_rate = 0.6
-
-    #init low rank subspace based on orthonormal basis
-    shape = (m,n,r)
-    X, masks, X_lowRank_array,labels = create_n_subspace_clusters(n_clusters=K, shape = shape)
-
-    #observed index
-    Omega = np.random.choice(m*n, size = int(m*n * (1-missing_rate) ), replace= False )
-
-    #create observed matrix
-    X_omega = np.zeros((m,n))
-    for p in Omega:
-        X_omega[p // n, p % n] = X[p // n, p % n]
-
-
+    init_params = (m,n,r,K,missing_rate)
+    
+    #all-in-one init function
+    X_omega, labels, Omega, info = initialize_X_with_missing(init_params)
+    
+    #parameter for training
     lambda_in = 1 #usually e-5
     weight_f_in = 1
     print('Paramter: lambda = ',lambda_in,', K = ',K,', m = ', m, ', n = ',n,', r = ',r,', missing_rate =', missing_rate)
-
+    
+    #object init
     GF = GrassmannianFusion(X = X_omega,
                             Omega = Omega,
                             r = r,
@@ -44,9 +37,14 @@ def main():
                             singular_value_bound = 1e-5,
                             g_column_norm_bound = 1e-5,
                             U_manifold_bound = 1e-5)
-
-    GF.train(max_iter = 50, step_size = 1)
-    U_array = GF.get_U_array()
+    
+    #reusable train function
+    GF.train(max_iter = 10, step_size = 1)
+    
+    #U_array getter function
+    S = GF.get_U_array()
+    
+    #d_matrix getter function
     d_matrix = GF.distance_matrix()
 
 
@@ -56,16 +54,11 @@ def main():
 
 
 
-    S = np.array(S)
-    S_mat = np.array(S[0]).reshape((1,100,100,3))
-    for si in S[1:]:
-        si_reshape = np.array(si).reshape((1,100,100,3))
-        S_mat = np.concatenate((S_mat, si_reshape))
-
+    '''
     optional_params = {'GoogleColab': True, 'objective_plot': True, 'max_epoch': 200, 'final_picture': True}
     optional_params['folder_name'] = 'saved_result'
     embedding = grasscare_plot(S = S_mat, labels = labels, video = True, optional_params = optional_params)
-
+    '''
 
 if __name__ == '__main__':
     main()

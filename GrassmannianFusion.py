@@ -20,7 +20,7 @@ class GrassmannianFusion:
     m:int
     n:int
 
-    U_array: list
+    U_array: np.ndarray
     X0:list
 
 
@@ -66,15 +66,15 @@ class GrassmannianFusion:
 
 
     def initialize_U_array(self):
-        U_array = [np.random.randn(self.m, self.r) for i in range(self.n)]
+        U_array = np.array([np.random.randn(self.m, self.r) for i in range(self.n)])
         for i in range(self.n):
-            U_array[i][:,0] = self.X[:,i] / np.linalg.norm(self.X[:,i])
+            U_array[i,:,0] = self.X[:,i] / np.linalg.norm(self.X[:,i])
             q_i,r_i = np.linalg.qr(U_array[i])
-            U_array[i] = q_i * r_i[0,0]
+            U_array[i,:,:] = q_i * r_i[0,0]
 
             #print(U_array[i].shape)
             #make sure the first col is x_i
-            assert np.linalg.norm(U_array[i][:,0] - self.X[:,i] / np.linalg.norm(self.X[:,i])) < self.bound_zero
+            assert np.linalg.norm(U_array[i,:,0] - self.X[:,i] / np.linalg.norm(self.X[:,i])) < self.bound_zero
             #make sure its orthogonal
             assert np.linalg.norm(U_array[i].T @ U_array[i] - np.identity(self.r)) < self.bound_zero
             #make sure its normal
@@ -99,6 +99,7 @@ class GrassmannianFusion:
                 #fill in the "identity matrix"
                 self.X0[i][row_index, col_index+1] = 1
 
+
     def train(self, max_iter:int, step_size:float):
         obj_record = []
         gradient_record = []
@@ -110,16 +111,17 @@ class GrassmannianFusion:
             new_U_array, end, gradient_norm = self.Armijo_step(alpha = step_size,
                                                         beta = 0.5,
                                                         sigma = 1e-5)
-
+            
+            new_np_U_array = np.empty((self.n, self.m, self.r))
             if iter % 1 == 0: ## projects back to the grassmannian after (1) iterations
                 for i in range(self.n):
                     u,s,vt = np.linalg.svd(new_U_array[i], full_matrices= False)
-                    new_U_array[i] = u@vt
+                    new_np_U_array[i,:,:] = u@vt
 
-            assert np.linalg.norm(new_U_array[i].T @ new_U_array[i] - np.identity(new_U_array[i].shape[1])) < self.U_manifold_bound
-            self.load_U_array(new_U_array)
+            assert np.linalg.norm(new_np_U_array[i].T @ new_np_U_array[i] - np.identity(new_np_U_array[i].shape[1])) < self.U_manifold_bound
+            self.load_U_array(new_np_U_array)
 
-            #record #here
+            #record
             obj = self.cal_obj(self.U_array)
             obj_record.append(obj)
             gradient_record.append(gradient_norm)
@@ -179,8 +181,6 @@ class GrassmannianFusion:
         return obj
 
 
-    #TODO merge cal_obj and this
-    #@title Armijo Step
     def Armijo_step(self, alpha = 1, beta = 0.5, sigma = 0.9):
         L = R = 0
 
