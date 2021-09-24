@@ -25,17 +25,17 @@ class GrassmannianFusion:
     X0:list
     
     def save_model(self, path):
-        np.savez_compressed(path, X = X,
-                                Omega = Omega,
-                                r = r,
-                                lamb = lamb,
-                                weight_factor = weight_factor,
-                                g_threshold = g_threshold,
-                                bound_zero = bound_zero,
-                                singular_value_bound = singular_value_bound,
-                                g_column_norm_bound = g_column_norm_bound,
-                                U_manifold_bound = U_manifold_bound,
-                                U_array = U_array)
+        np.savez_compressed(path, X=self.X,
+                                Omega = self.Omega,
+                                r = self.r,
+                                lamb = self.lamb,
+                                weight_factor = self.weight_factor,
+                                g_threshold = self.g_threshold,
+                                bound_zero = self.bound_zero,
+                                singular_value_bound = self.singular_value_bound,
+                                g_column_norm_bound = self.g_column_norm_bound,
+                                U_manifold_bound = self.U_manifold_bound,
+                                U_array = self.U_array)
                                 
         print('Successfully save to: ' + path )
         return True
