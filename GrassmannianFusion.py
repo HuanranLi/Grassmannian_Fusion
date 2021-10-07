@@ -367,3 +367,21 @@ class GrassmannianFusion:
         d_matrix = np.array(d_matrix)
 
         return d_matrix
+
+
+    def chordal_dist_mat(self):
+        for i in range(self.n):
+            for j in range(self.n):
+                A = self.X0[i] @ self.X0[i].T @ self.U_array[j]
+                U_A, s_A, VT_A = np.linalg.svd(A) #SVD of X_iX_i^T U_j
+                u = U_A[:,0]
+                vt = VT_A[0,:] ##### verify that these are taken properly #####
+
+                if s_A[0] > 1 and s_A[0] - 1 < self.singular_value_bound:
+                    s_A[0] = 1
+                elif s_A[0] > 1:
+                    raise Exception('Chordal, s_A[0] = ', s_A[0])
+
+                chordal_dist[i][j] = 1 - s_A[0]**2 # gives d_c^2(xi, Uj)
+
+        return chordal_dist
