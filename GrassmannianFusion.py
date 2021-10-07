@@ -23,7 +23,7 @@ class GrassmannianFusion:
 
     U_array: np.ndarray
     X0:list
-    
+
     def save_model(self, path):
         np.savez_compressed(path, X=self.X,
                                 Omega = self.Omega,
@@ -36,7 +36,7 @@ class GrassmannianFusion:
                                 g_column_norm_bound = self.g_column_norm_bound,
                                 U_manifold_bound = self.U_manifold_bound,
                                 U_array = self.U_array)
-                                
+
         print('Successfully save to: ' + path )
         return True
 
@@ -54,7 +54,7 @@ class GrassmannianFusion:
                 g_column_norm_bound = data['g_column_norm_bound'],
                 U_manifold_bound = data['U_manifold_bound'],
                 U_array = data['U_array'])
-        
+
         print('Successfully loaded the model!')
         return GF
 
@@ -68,7 +68,7 @@ class GrassmannianFusion:
                 g_column_norm_bound = 1e-5,
                 U_manifold_bound = 1e-2,
                 **optional_params):
-           
+
         print('\n########### GrassmannianFusion Initialization Start ###########')
         self.X = X
         self.Omega = Omega
@@ -85,7 +85,7 @@ class GrassmannianFusion:
         self.n = X.shape[1]
 
         self.shape = [self.m, self.n, self.r]
-        
+
         if 'U_array' in optional_params:
             self.load_U_array(optional_params['U_array'])
             print('U_array Loaded successfully!')
@@ -94,7 +94,7 @@ class GrassmannianFusion:
             print('U_array initialized successfully!')
 
         self.construct_X0()
-        
+
         print('########### GrassmannianFusion Initialization END ###########\n')
 
     def get_U_array(self):
@@ -103,7 +103,7 @@ class GrassmannianFusion:
 
     def load_U_array(self, U_array):
         self.U_array = U_array.copy()
-        
+
     def change_lambda(lamb: float):
         self.lamb = lamb
 
@@ -146,7 +146,7 @@ class GrassmannianFusion:
         obj_record = []
         gradient_record = []
         start_time = time.time()
-        
+
         print('\n################ Training Process Begin ################')
         #main algo
         for iter in range(max_iter):
@@ -154,7 +154,7 @@ class GrassmannianFusion:
             new_U_array, end, gradient_norm = self.Armijo_step(alpha = step_size,
                                                         beta = 0.5,
                                                         sigma = 1e-5)
-            
+
             new_np_U_array = np.empty((self.n, self.m, self.r))
             if iter % 1 == 0: ## projects back to the grassmannian after (1) iterations
                 for i in range(self.n):
@@ -181,8 +181,9 @@ class GrassmannianFusion:
                 print('Final iter', iter)
                 print('Final Obj value:', obj)
                 break
-                
+
         print('################ Training Process END ################\n')
+        return obj, gradient_norm
 
 
     def cal_obj(self, U_array):
