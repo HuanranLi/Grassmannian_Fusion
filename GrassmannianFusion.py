@@ -370,6 +370,8 @@ class GrassmannianFusion:
 
 
     def chordal_dist_mat(self):
+        chordal_dist = np.zeros((self.n,self.n))
+        
         for i in range(self.n):
             for j in range(self.n):
                 A = self.X0[i] @ self.X0[i].T @ self.U_array[j]
