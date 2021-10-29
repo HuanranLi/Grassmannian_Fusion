@@ -203,7 +203,7 @@ class GrassmannianFusion:
 
         for i in range(self.n):
             for j in range(self.n):
-                w[i][j] = np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j] + chordal_dist[j][i])) #can't construct in above since requires access to ji before computed
+                w[i][j] = np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
 
         geodesic_distances = np.zeros((self.n, self.n))
 
@@ -257,8 +257,8 @@ class GrassmannianFusion:
 
         for i in range(self.n):
             for j in range(self.n):
-                w[i][j] = np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j] + chordal_dist[j][i])) #can't construct in above since requires access to ji before computed
-                w_gradients[i][j] = w[i][j] * self.weight_factor * (-0.5) * chordal_gradients[i][j] # gives the gradient of w_ij=w_ji w.r.t. U_j
+                w[i][j] = np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
+                w_gradients[i][j] = w[i][j] * self.weight_factor * (-0.5) * chordal_gradients[i][j] # gives the gradient of w_ij w.r.t. U_j
 
         geodesic_distances = np.zeros((self.n,self.n))
         geodesic_gradients = np.empty((self.n,self.n), dtype=np.ndarray) ########## issue with type, check where needed
@@ -294,7 +294,7 @@ class GrassmannianFusion:
             # if (s_j[r_index] - 1 > 0):
             #  s_j[r_index] = 1
 
-                dg_UU = (np.identity(self.m) - self.U_array[i] @ self.U_array[i].T) @ (w[i][j] * geodesic_gradients[i][j] + w_gradients[j][i] * geodesic_distances[i][j])
+                dg_UU = w[i][j] * geodesic_gradients[i][j] + (w_gradients[j][i] * geodesic_distances[j][i] + w[j][i] * geodesic_gradients[i][j])
                 grad_f_i += self.lamb / 2 * dg_UU
 
             grad_f_i = (np.identity(self.m) - self.U_array[i] @ self.U_array[i].T) @ grad_f_i
