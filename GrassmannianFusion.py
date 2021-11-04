@@ -203,7 +203,7 @@ class GrassmannianFusion:
 
         for i in range(self.n):
             for j in range(self.n):
-                w[i][j] = np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
+                w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - 0.5 ))) # (old weight) np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
 
         geodesic_distances = np.zeros((self.n, self.n))
 
@@ -257,8 +257,8 @@ class GrassmannianFusion:
 
         for i in range(self.n):
             for j in range(self.n):
-                w[i][j] = np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
-                w_gradients[i][j] = w[i][j] * self.weight_factor * (-0.5) * chordal_gradients[i][j] # gives the gradient of w_ij w.r.t. U_j
+                w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - 0.5 ))) #old weight np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
+                w_gradients[i][j] = -self.weight_factor * np.exp(self.weight_factor * (chordal_dist[i][j] - 0.5)) * w[i][j]**2 * chordal_gradients[i][j] #old w[i][j] * self.weight_factor * (-0.5) * chordal_gradients[i][j] # gives the gradient of w_ij w.r.t. U_j
 
         geodesic_distances = np.zeros((self.n,self.n))
         geodesic_gradients = np.empty((self.n,self.n), dtype=np.ndarray) ########## issue with type, check where needed
