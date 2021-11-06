@@ -25,6 +25,7 @@ def main():
     lambda_in = 1 #usually e-5
     weight_f_in = 1
     weight_offset_in = 0.5
+    k_nearest_in = 1
     print('Paramter: lambda = ',lambda_in,', K = ',K,', m = ', m, ', n = ',n,', r = ',r,', missing_rate =', missing_rate)
     
     #object init
@@ -34,6 +35,7 @@ def main():
                             lamb = lambda_in,
                             weight_factor = weight_f_in,
                             weight_offset = weight_offset_in,
+                            k_nearest = k_nearest_in,
                             g_threshold= 1e-6,
                             bound_zero = 1e-10,
                             singular_value_bound = 1e-5,
