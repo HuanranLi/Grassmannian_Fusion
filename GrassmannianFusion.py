@@ -213,7 +213,7 @@ class GrassmannianFusion:
         
         for i in range(self.n):
             nearest_k_indices = dist_matrix[i].argsort()[:self.k_nearest]
-            w[i][nearest_k_indices] = 1
+            w[i][nearest_k_indices] = 0
             #for j in range(self.n):
                 #w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - self.weight_offset ))) # (old weight) np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
 
@@ -270,7 +270,7 @@ class GrassmannianFusion:
         
         for i in range(self.n):
             nearest_k_indices = dist_matrix[i].argsort()[:self.k_nearest]
-            w[i][nearest_k_indices] = 1
+            w[i][nearest_k_indices] = 0
             #for j in range(self.n):
                 #w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - self.weight_offset ))) #old weight np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
                 #w_gradients[i][j] = -self.weight_factor * np.exp(self.weight_factor * (chordal_dist[i][j] - self.weight_offset)) * w[i][j]**2 * chordal_gradients[i][j] #old w[i][j] * self.weight_factor * (-0.5) * chordal_gradients[i][j] # gives the gradient of w_ij w.r.t. U_j
