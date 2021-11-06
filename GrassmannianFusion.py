@@ -31,6 +31,7 @@ class GrassmannianFusion:
                                 lamb = self.lamb,
                                 weight_factor = self.weight_factor,
                                 weight_offset = self.weight_offset,
+                                k_nearest = self.k_nearest,
                                 g_threshold = self.g_threshold,
                                 bound_zero = self.bound_zero,
                                 singular_value_bound = self.singular_value_bound,
@@ -50,6 +51,7 @@ class GrassmannianFusion:
                 lamb = data['lamb'],
                 weight_factor = data['weight_factor'],
                 weight_offset = data['weight_offset'],
+                k_nearest = data['k_nearest'],
                 g_threshold = data['g_threshold'],
                 bound_zero = data['bound_zero'],
                 singular_value_bound = data['singular_value_bound'],
@@ -65,6 +67,7 @@ class GrassmannianFusion:
     def __init__(self, X, Omega, r, lamb,
                 weight_factor = 1,
                 weight_offset = 0.5,
+                k_nearest = 1,
                 g_threshold = 0.15,
                 bound_zero = 1e-10,
                 singular_value_bound = 1e-2,
@@ -79,6 +82,7 @@ class GrassmannianFusion:
         self.lamb = lamb
         self.weight_factor = weight_factor
         self.weight_offset = weight_offset
+        self.k_nearest = k_nearest
         self.g_threshold = g_threshold
         self.bound_zero = bound_zero
         self.singular_value_bound = singular_value_bound
@@ -204,10 +208,14 @@ class GrassmannianFusion:
                 vt = VT_A[0,:] ##### verify that these are taken properly #####
 
                 chordal_dist[i][j] = 1 - s_A[0]**2 # gives d_c^2(xi, Uj)
-
+                
+        dist_matrix = self.distance_matrix()
+        
         for i in range(self.n):
-            for j in range(self.n):
-                w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - self.weight_offset ))) # (old weight) np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
+            nearest_k_indices = dist_matrix[i].argsort()[-self.k_nearest:]
+            w[i][nearest_k_indices] = 1
+            #for j in range(self.n):
+                #w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - self.weight_offset ))) # (old weight) np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
 
         geodesic_distances = np.zeros((self.n, self.n))
 
@@ -237,7 +245,7 @@ class GrassmannianFusion:
         w = np.zeros((self.n,self.n))
         chordal_dist = np.zeros((self.n,self.n))
         chordal_gradients = np.empty((self.n,self.n), dtype=np.ndarray) ######### issue with type, check where needed
-        w_gradients = np.empty((self.n,self.n), dtype=np.ndarray)
+        #w_gradients = np.empty((self.n,self.n), dtype=np.ndarray)
         #print("test", type(w_gradients))
         #print("test", type(chordal_gradients[1][1]))
 
@@ -258,11 +266,14 @@ class GrassmannianFusion:
 
                 #print("test grad", type(chordal_gradients[1][1]))
 
-
+        dist_matrix = self.distance_matrix()
+        
         for i in range(self.n):
-            for j in range(self.n):
-                w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - self.weight_offset ))) #old weight np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
-                w_gradients[i][j] = -self.weight_factor * np.exp(self.weight_factor * (chordal_dist[i][j] - self.weight_offset)) * w[i][j]**2 * chordal_gradients[i][j] #old w[i][j] * self.weight_factor * (-0.5) * chordal_gradients[i][j] # gives the gradient of w_ij w.r.t. U_j
+            nearest_k_indices = dist_matrix[i].argsort()[-self.k_nearest:]
+            w[i][nearest_k_indices] = 1
+            #for j in range(self.n):
+                #w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - self.weight_offset ))) #old weight np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
+                #w_gradients[i][j] = -self.weight_factor * np.exp(self.weight_factor * (chordal_dist[i][j] - self.weight_offset)) * w[i][j]**2 * chordal_gradients[i][j] #old w[i][j] * self.weight_factor * (-0.5) * chordal_gradients[i][j] # gives the gradient of w_ij w.r.t. U_j
 
         geodesic_distances = np.zeros((self.n,self.n))
         geodesic_gradients = np.empty((self.n,self.n), dtype=np.ndarray) ########## issue with type, check where needed
@@ -298,7 +309,7 @@ class GrassmannianFusion:
             # if (s_j[r_index] - 1 > 0):
             #  s_j[r_index] = 1
 
-                dg_UU = w[i][j] * geodesic_gradients[i][j] + (w_gradients[j][i] * geodesic_distances[j][i] + w[j][i] * geodesic_gradients[i][j])
+                dg_UU = w[i][j] * geodesic_gradients[i][j]# + (w_gradients[j][i] * geodesic_distances[j][i] + w[j][i] * geodesic_gradients[i][j])
                 grad_f_i += self.lamb / 2 * dg_UU
 
             grad_f_i = (np.identity(self.m) - self.U_array[i] @ self.U_array[i].T) @ grad_f_i
