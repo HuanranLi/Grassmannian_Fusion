@@ -212,7 +212,7 @@ class GrassmannianFusion:
         dist_matrix = self.distance_matrix()
         
         for i in range(self.n):
-            nearest_k_indices = dist_matrix[i].argsort()[-self.k_nearest:]
+            nearest_k_indices = dist_matrix[i].argsort()[:self.k_nearest]
             w[i][nearest_k_indices] = 1
             #for j in range(self.n):
                 #w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - self.weight_offset ))) # (old weight) np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
@@ -269,7 +269,7 @@ class GrassmannianFusion:
         dist_matrix = self.distance_matrix()
         
         for i in range(self.n):
-            nearest_k_indices = dist_matrix[i].argsort()[-self.k_nearest:]
+            nearest_k_indices = dist_matrix[i].argsort()[:self.k_nearest]
             w[i][nearest_k_indices] = 1
             #for j in range(self.n):
                 #w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - self.weight_offset ))) #old weight np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
