@@ -3,7 +3,6 @@ from Initialization import *
 from helper_functions import evaluate
 
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.cluster import SpectralClustering
 from sklearn.cluster import KMeans
 from sklearn.cluster import DBSCAN
@@ -37,7 +36,7 @@ def main(argv):
                         bound_zero = 1e-10,
                         singular_value_bound = 1e-5,
                         g_column_norm_bound = 1e-5,
-                        U_manifold_bound = 1e-5))
+                        U_manifold_bound = 1e-5)
 
     #reusable train function
     GF.train(max_iter = 50, step_size = 1)
