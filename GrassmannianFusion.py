@@ -204,10 +204,6 @@ class GrassmannianFusion:
 
                 chordal_dist[i][j] = 1 - s_A[0]**2 # gives d_c^2(xi, Uj)
 
-        #for i in range(self.n):
-        #    for j in range(self.n):
-        #        w[i][j] = 1/(1 + np.exp(self.weight_factor * ( chordal_dist[i][j] - self.weight_offset ))) # (old weight) np.exp(self.weight_factor * -0.5 * (chordal_dist[i][j]))
-
         geodesic_distances = np.zeros((self.n, self.n))
 
         for i in range(self.n):

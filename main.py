@@ -15,14 +15,14 @@ def main(argv):
     n = 100 #100-300
     r = 3 #3-5
     K = 2
-    missing_rate = (int(argv[1]) // 10) / 10
+    missing_rate = (int(argv[1]) % 10) / 10
     init_params = (m,n,r,K,missing_rate)
 
     #all-in-one init function
     X_omega, labels, Omega, info = initialize_X_with_missing(init_params)
 
     #parameter for training
-    lambda_in = 0.005 #usually e-5
+    lambda_in = 1e-5 #usually e-5
     #weight_f_in = 1
     #weight_offset_in = 0.5
     print('Paramter: lambda = ',lambda_in,', K = ',K,', m = ', m, ', n = ',n,', r = ',r,', missing_rate =', missing_rate)
